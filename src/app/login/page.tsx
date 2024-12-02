@@ -1,65 +1,63 @@
-"use client"
+"use client";
 
-import { fetcher } from '@/lib/fetcher'
-import React, { useState } from 'react'
-import useSWR, { mutate } from 'swr'
+import React, { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { fetcher } from "@/lib/fetcher";
 
-const page = () => {
-    const [username, setUsername] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [message, setMessage] = useState('')
+const RegisterPage = () => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
-    const { data, error } = useSWR(
-        '/api/users', 
-        () => fetcher('/api/users', 'POST', { username, email, password }), 
-        { revalidateOnFocus: false, shouldRetryOnError: false, isPaused: () => !username || !email || !password }
-      );
+  const mutation = useMutation({
+    mutationFn: (data: { username: string; email: string; password: string }) =>
+      fetcher("/api/users", "POST", data),
+    onSuccess: (data) => {
+      setMessage(`User registered successfully! Welcome, ${data.user.username}.`);
+    },
+    onError: (error: any) => {
+      setMessage(error.message || "Failed to register.");
+    },
+  });
 
-      const handleSubmit = async(e: React.FormEvent) => {
-        e.preventDefault()
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    mutation.mutate({ username, email, password });
+  };
 
-        try {
-            await mutate("/api/users", await fetcher('/api/users', 'POST', {username, email, password }),false)
-            setMessage('User created successfully')
-        } catch (error: any) {
-            setMessage(error.message);
-            
-        }
-
-      }
-    
   return (
-    <div className='flex flex-col items-center bg-gray-300'>
-    <form onSubmit={handleSubmit}>
-      <h2>Register</h2>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button type="submit">Register</button>
-      {/* {error && <p>{error.message}</p>}
-      {data && <pre>{JSON.stringify(data)}</pre>} */}
-    </form>
-    
+    <div className="flex flex-col items-center bg-gray-300">
+      <form onSubmit={handleSubmit} className="p-4">
+        <h2>Register</h2>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit" disabled={mutation.status === "pending"}>
+          {mutation.status === "pending" ? "Registering..." : "Register"}
+        </button>
+        {message && <p>{message}</p>}
+      </form>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default RegisterPage;
