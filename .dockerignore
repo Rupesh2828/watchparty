@@ -1,0 +1,6 @@
+node_modules
+.env
+
+# Ignore Prisma artifacts
+prisma/*.db  # SQLite database files
+prisma/migrations

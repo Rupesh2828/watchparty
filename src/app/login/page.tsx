@@ -54,8 +54,8 @@ const page = () => {
         onChange={(e) => setPassword(e.target.value)}
       />
       <button type="submit">Register</button>
-      {error && <p>{error.message}</p>}
-      {data && <pre>{JSON.stringify(data)}</pre>}
+      {/* {error && <p>{error.message}</p>}
+      {data && <pre>{JSON.stringify(data)}</pre>} */}
     </form>
     
     </div>
