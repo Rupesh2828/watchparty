@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from "bcrypt";
 const db = new PrismaClient()
 
-
+//below POST and GET are for register and login controller.
 export const POST = async (req: Request, res: Response) => {
     try {
         const body = await req.json()
