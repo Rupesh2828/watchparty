@@ -16,7 +16,7 @@ export const POST = async (req: Request, res: Response) => {
             )
 
         }
-
+        
         const newWatchParty = await db.watchParty.create({
             data: {
                 title: body.title,
